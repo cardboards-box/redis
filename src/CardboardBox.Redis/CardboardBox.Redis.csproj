@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<Authors>Cardboard</Authors>
+		<Company>N/A</Company>
+		<Description>Provides a simple wrapper around the `StackExchange.Redis` library to make it easier to use.</Description>
+		<PackageProjectUrl>https://github.com/cardboards-box/redis</PackageProjectUrl>
+		<PackageIcon>icon.jpg</PackageIcon>
+		<RepositoryUrl>https://github.com/cardboards-box/redis</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>Redis;CardboardBox;Cardboard;StackExchange</PackageTags>
+		<Version>2.0.0</Version>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CardboardBox.Json" Version="1.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+		<PackageReference Include="StackExchange.Redis" Version="2.6.111" />
+		<PackageReference Include="System.Reactive" Version="6.0.0" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<None Include="..\..\icon.jpg">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>
