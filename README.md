@@ -50,7 +50,7 @@ services.AddRedis();
 ```
 
 This will load the following values from the configuration instance:
-* `Redis:ConnectionString` - This is the standard connection string for attaching to a redis instance.
+* `Redis:Connection` - This is the standard connection string for attaching to a redis instance.
 * `Redis:Prefix:Data` - This is the optional prefix that will be applied to all keys when interacting with redis.
 * `Redis:Prefix:Events` - This is the optional prefix that will be applied to all keys when interacting with pub/subs within redis.
 
