@@ -116,3 +116,6 @@ These do not handle prefixes automatically and by-pass any data checks the `IRed
 
 The intellisense/XML documentation comments are included in the Nuget package and should provide adequate information on how to use the library. 
 Feel free to open an issue if you have any questions or suggestions.
+
+## Examples
+For more examples you can checkout the `CardboardBox.Redis.TestCli` project in the source code.

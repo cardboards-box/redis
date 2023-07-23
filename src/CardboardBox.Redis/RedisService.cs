@@ -43,7 +43,7 @@ public interface IRedisService
     /// </summary>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
-    /// <returns><see cref="true"/> if the value was set, <see cref="false"/> if otherwise</returns>
+    /// <returns>true if the value was set, false if otherwise</returns>
     Task<bool> Set(string key, RedisValue data);
 
     /// <summary>
@@ -51,7 +51,7 @@ public interface IRedisService
     /// </summary>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
-    /// <returns><see cref="true"/> if the value was set, <see cref="false"/> if otherwise</returns>
+    /// <returns>true if the value was set, false if otherwise</returns>
     Task<bool> Set(string key, string data);
 
     /// <summary>
@@ -60,14 +60,14 @@ public interface IRedisService
     /// <typeparam name="T">The type of data</typeparam>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
-    /// <returns><see cref="true"/> if the value was set, <see cref="false"/> if otherwise</returns>
+    /// <returns>true if the value was set, false if otherwise</returns>
     Task<bool> Set<T>(string key, T data);
 
     /// <summary>
     /// Deletes a variable in redis
     /// </summary>
     /// <param name="key">The key of the variable</param>
-    /// <returns><see cref="true"/> if the variable was removed</returns>
+    /// <returns>true if the variable was removed</returns>
     Task<bool> Delete(string key);
 
     /// <summary>
@@ -259,7 +259,7 @@ public class RedisService : IRedisService
     /// </summary>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
-    /// <returns><see cref="true"/> if the value was set, <see cref="false"/> if otherwise</returns>
+    /// <returns>true if the value was set, false if otherwise</returns>
     public async Task<bool> Set(string key, RedisValue data)
     {
         var database = await GetDatabase();
@@ -271,7 +271,7 @@ public class RedisService : IRedisService
     /// </summary>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
-    /// <returns><see cref="true"/> if the value was set, <see cref="false"/> if otherwise</returns>
+    /// <returns>true if the value was set, false if otherwise</returns>
     public Task<bool> Set(string key, string data) => Set(key, (RedisValue)data);
 
     /// <summary>
@@ -280,7 +280,7 @@ public class RedisService : IRedisService
     /// <typeparam name="T">The type of data</typeparam>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
-    /// <returns><see cref="true"/> if the value was set, <see cref="false"/> if otherwise</returns>
+    /// <returns>true if the value was set, false if otherwise</returns>
     public Task<bool> Set<T>(string key, T data)
     {
         return Set(key, (RedisValue)_json.Serialize(data));
@@ -290,7 +290,7 @@ public class RedisService : IRedisService
     /// Deletes a variable in redis
     /// </summary>
     /// <param name="key">The key of the variable</param>
-    /// <returns><see cref="true"/> if the variable was removed</returns>
+    /// <returns>true if the variable was removed</returns>
     public async Task<bool> Delete(string key)
     {
         var database = await GetDatabase();
