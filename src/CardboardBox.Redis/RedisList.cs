@@ -168,7 +168,7 @@ internal class RedisList : IRedisList
     /// </summary>
     /// <param name="values">The data to prepend to the list</param>
     /// <returns>The count of the elements in the list after the operation completes</returns>
-    public Task<long> Prepend(params string[] values) => Prepend(values.Cast<RedisValue>().ToArray());
+    public Task<long> Prepend(params string[] values) => Prepend(values.Convert());
 
     /// <summary>
     /// Adds the given elements to the end of the list
@@ -186,7 +186,7 @@ internal class RedisList : IRedisList
     /// </summary>
     /// <param name="values">The data to append to the list</param>
     /// <returns>The count of the elements in the list after the operation completes</returns>
-    public Task<long> Append(params string[] values) => Append(values.Cast<RedisValue>().ToArray());
+    public Task<long> Append(params string[] values) => Append(values.Convert());
 
     /// <summary>
     /// Gets the element at the given position in the list
@@ -217,7 +217,7 @@ internal class RedisList : IRedisList
     /// <param name="index">The postition of the element</param>
     /// <param name="value">The value to set</param>
     /// <returns></returns>
-    public Task Set(long index, string value) => Set(index, (RedisValue)value);
+    public Task Set(long index, string value) => Set(index, value.Convert());
 
     /// <summary>
     /// Gets the length of the list

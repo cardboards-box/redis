@@ -275,7 +275,7 @@ internal class RedisList<T> : IRedisList<T>
             .Where(t => !t.IsNull)
             .Select(t => _json.Deserialize<T>(t.ToString()))
             .Where(t => t != null)
-            .Cast<T>()
+            .Select(t => t!)
             .ToArray();
     }
 }

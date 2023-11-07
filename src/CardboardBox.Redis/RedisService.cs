@@ -272,7 +272,7 @@ public class RedisService : IRedisService
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
     /// <returns>true if the value was set, false if otherwise</returns>
-    public Task<bool> Set(string key, string data) => Set(key, (RedisValue)data);
+    public Task<bool> Set(string key, string data) => Set(key, data.Convert());
 
     /// <summary>
     /// Sets the JSON value of a variable in redis
@@ -283,7 +283,7 @@ public class RedisService : IRedisService
     /// <returns>true if the value was set, false if otherwise</returns>
     public Task<bool> Set<T>(string key, T data)
     {
-        return Set(key, (RedisValue)_json.Serialize(data));
+        return Set(key, _json.Serialize(data).Convert());
     }
 
     /// <summary>
@@ -427,7 +427,7 @@ public class RedisService : IRedisService
     /// <param name="channel">The channel to publish to</param>
     /// <param name="value">The value to publish</param>
     /// <returns>A task representing the completion of the publication</returns>
-    public Task Publish(string channel, string value) => Publish(channel, (RedisValue)value);
+    public Task Publish(string channel, string value) => Publish(channel, value.Convert());
 
     /// <summary>
     /// Publishes a message to the given channel
@@ -438,7 +438,7 @@ public class RedisService : IRedisService
     /// <returns>A task representing the completion of the publication</returns>
     public Task Publish<T>(string channel, T value)
     {
-        return Publish(channel, (RedisValue)_json.Serialize(value));
+        return Publish(channel, _json.Serialize(value).Convert());
     }
 
     /// <summary>

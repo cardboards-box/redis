@@ -69,4 +69,24 @@ public static class RedisDiExtensions
             .AddRedisBase()
             .AddTransient<IRedisConfig, T>();
     }
+
+    /// <summary>
+    /// Converts a string to a redis value
+    /// </summary>
+    /// <param name="value">The value to convert</param>
+    /// <returns>The converted value</returns>
+    public static RedisValue Convert(this string value)
+    {
+        return new RedisValue(value);
+    }
+
+    /// <summary>
+    /// Converts the given strings to redis values
+    /// </summary>
+    /// <param name="values">The values to convert</param>
+    /// <returns>The converted redis values</returns>
+    public static RedisValue[] Convert(this IEnumerable<string> values)
+    {
+        return values.Select(Convert).ToArray();
+    }
 }
