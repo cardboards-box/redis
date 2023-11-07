@@ -1,7 +1,5 @@
 ﻿namespace CardboardBox.Redis;
 
-using Json;
-
 /// <summary>
 /// Provides access to redis list operations of a given type.
 /// Note: This is a transient dummy object, and instances shouldn't be retained / persisted. Just create a new one.
@@ -120,7 +118,7 @@ public interface IRedisList<T>
 /// <typeparam name="T">The type of items in the list</typeparam>
 internal class RedisList<T> : IRedisList<T>
 {
-    private readonly IJsonService _json;
+    private readonly IRedisJsonService _json;
     private readonly IRedisList _list;
 
     /// <summary>
@@ -128,7 +126,7 @@ internal class RedisList<T> : IRedisList<T>
     /// </summary>
     public string Key => _list.Key;
 
-    public RedisList(IRedisService redis, string prefix, IJsonService json)
+    public RedisList(IRedisService redis, string prefix, IRedisJsonService json)
     {
         _json = json;
         _list = new RedisList(redis, prefix);

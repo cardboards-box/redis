@@ -1,4 +1,6 @@
-﻿namespace CardboardBox.Redis;
+﻿using System.Text.Json;
+
+namespace CardboardBox.Redis;
 
 /// <summary>
 /// The dependency injection extensions for adding redis
@@ -7,9 +9,15 @@ public static class RedisDiExtensions
 {
     private static IServiceCollection AddRedisBase(this IServiceCollection services)
     {
+        var opts = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+
         return services
             .AddSingleton<IRedisConnection, RedisConnection>()
-            .AddTransient<IRedisService, RedisService>();
+            .AddTransient<IRedisService, RedisService>()
+            .AddSingleton<IRedisJsonService>(new RedisJsonService(opts));
     }
 
     /// <summary>
@@ -19,7 +27,8 @@ public static class RedisDiExtensions
     /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddRedis(this IServiceCollection services)
     {
-        return services.AddRedis<DynamicRedisConfig>();
+        return services
+            .AddRedis<DynamicRedisConfig>();
     }
 
     /// <summary>
@@ -30,7 +39,8 @@ public static class RedisDiExtensions
     /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddRedis(this IServiceCollection services, ConfigurationOptions options)
     {
-        return services.AddRedis(new StaticRedisConfig(options));
+        return services
+            .AddRedis(new StaticRedisConfig(options));
     }
 
     /// <summary>
@@ -41,7 +51,8 @@ public static class RedisDiExtensions
     /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddRedis(this IServiceCollection services, string connectionString)
     {
-        return services.AddRedis(new StaticRedisConfig(connectionString));
+        return services
+            .AddRedis(new StaticRedisConfig(connectionString));
     }
 
     /// <summary>

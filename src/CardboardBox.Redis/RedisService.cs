@@ -182,7 +182,7 @@ public interface IRedisService
 public class RedisService : IRedisService
 {
     private readonly IRedisConnection _connection;
-    private readonly IJsonService _json;
+    private readonly IRedisJsonService _json;
     private readonly IRedisConfig _config;
 
     private IDatabase? _database;
@@ -196,7 +196,7 @@ public class RedisService : IRedisService
     /// <param name="config">The redis connection configuration</param>
     public RedisService(
         IRedisConnection connection,
-        IJsonService json,
+        IRedisJsonService json,
         IRedisConfig config)
     {
         _connection = connection;
