@@ -127,7 +127,7 @@ public class TestVerb : IVerb<TestVerbOptions>
     /// </summary>
     /// <param name="_">We don't really care about options for this test</param>
     /// <returns></returns>
-    public async Task<int> Run(TestVerbOptions _)
+    public async Task<int> Run(TestVerbOptions _, CancellationToken __)
     {
         try
         {
