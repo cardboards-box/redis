@@ -1,5 +1,4 @@
 ﻿using CardboardBox;
-using CardboardBox.Json;
 using CardboardBox.Redis;
 using CardboardBox.Redis.TestCli;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +12,7 @@ Run the project with the "redis-test" parameter in the CLI arguments.
 For more information about how the "Cli(args, builder)" extension works, see the CardboardBox.Setup nuget package.
 */
 
-//Setup the depencency injection container
+//Setup the dependency injection container
 return await new ServiceCollection()
     //Add the configuration (the redis connection string is fetched from environment variables)
     .AddConfig(c =>
@@ -22,8 +21,6 @@ return await new ServiceCollection()
          .AddCommandLine(args)
          .AddEnvironmentVariables();
     })
-    //Add the JSON serializer system (see the nuget package: CardboardBox.Json)
-    .AddJson()
     //Add serilog for logging (extension is in the CardboardBox.Setup package)
     .AddSerilog()
     //Add the redis services, getting the configuration from the appsettings.json file and the environment variables

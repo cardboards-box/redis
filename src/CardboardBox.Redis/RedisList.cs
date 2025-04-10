@@ -202,7 +202,7 @@ internal class RedisList : IRedisList
     /// <summary>
     /// Sets the element at the given position in the list
     /// </summary>
-    /// <param name="index">The postition of the element</param>
+    /// <param name="index">The position of the element</param>
     /// <param name="value">The value to set</param>
     /// <returns></returns>
     public async Task Set(long index, RedisValue value)
@@ -214,7 +214,7 @@ internal class RedisList : IRedisList
     /// <summary>
     /// Sets the element at the given position in the list
     /// </summary>
-    /// <param name="index">The postition of the element</param>
+    /// <param name="index">The position of the element</param>
     /// <param name="value">The value to set</param>
     /// <returns></returns>
     public Task Set(long index, string value) => Set(index, value.Convert());

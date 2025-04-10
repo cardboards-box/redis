@@ -43,16 +43,18 @@ public interface IRedisService
     /// </summary>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
+    /// <param name="expiry">The expiry to set</param>
     /// <returns>true if the value was set, false if otherwise</returns>
-    Task<bool> Set(string key, RedisValue data);
+    Task<bool> Set(string key, RedisValue data, TimeSpan? expiry = null);
 
     /// <summary>
     /// Sets the value of a variable in redis
     /// </summary>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
+    /// <param name="expiry">The expiry to set</param>
     /// <returns>true if the value was set, false if otherwise</returns>
-    Task<bool> Set(string key, string data);
+    Task<bool> Set(string key, string data, TimeSpan? expiry = null);
 
     /// <summary>
     /// Sets the JSON value of a variable in redis
@@ -60,8 +62,9 @@ public interface IRedisService
     /// <typeparam name="T">The type of data</typeparam>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
+    /// <param name="expiry">The expiry to set</param>
     /// <returns>true if the value was set, false if otherwise</returns>
-    Task<bool> Set<T>(string key, T data);
+    Task<bool> Set<T>(string key, T data, TimeSpan? expiry = null);
 
     /// <summary>
     /// Deletes a variable in redis
@@ -104,7 +107,7 @@ public interface IRedisService
     /// <summary>
     /// Subscribes to the given channel and executes the given action whenever it triggers
     /// </summary>
-    /// <typeparam name="T">The type of data the scubscription is dealing with</typeparam>
+    /// <typeparam name="T">The type of data the subscription is dealing with</typeparam>
     /// <param name="channel">The channel to subscribe to</param>
     /// <param name="action">The action to execute whenever a message is received</param>
     /// <returns>A task representing the completion of the subscription</returns>
@@ -171,7 +174,7 @@ public interface IRedisService
     /// Unsubscribes from the given channel
     /// </summary>
     /// <param name="channel">The channel to unsubscribe from</param>
-    /// <returns>A task representing the completion of the unsubscription</returns>
+    /// <returns>A task representing the completion of an unsubscribe action</returns>
     Task Unsubscribe(string channel);
     #endregion
 }
@@ -259,11 +262,12 @@ public class RedisService : IRedisService
     /// </summary>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
+    /// <param name="expiry">The expiry to set</param>
     /// <returns>true if the value was set, false if otherwise</returns>
-    public async Task<bool> Set(string key, RedisValue data)
+    public async Task<bool> Set(string key, RedisValue data, TimeSpan? expiry = null)
     {
         var database = await GetDatabase();
-        return await database.StringSetAsync(Prefix(key), data);
+        return await database.StringSetAsync(Prefix(key), data, expiry);
     }
 
     /// <summary>
@@ -271,8 +275,9 @@ public class RedisService : IRedisService
     /// </summary>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
+    /// <param name="expiry">The expiry to set</param>
     /// <returns>true if the value was set, false if otherwise</returns>
-    public Task<bool> Set(string key, string data) => Set(key, data.Convert());
+    public Task<bool> Set(string key, string data, TimeSpan? expiry = null) => Set(key, data.Convert(), expiry);
 
     /// <summary>
     /// Sets the JSON value of a variable in redis
@@ -280,10 +285,11 @@ public class RedisService : IRedisService
     /// <typeparam name="T">The type of data</typeparam>
     /// <param name="key">The key of the variable</param>
     /// <param name="data">The data to set the variable to</param>
+    /// <param name="expiry">The expiry to set</param>
     /// <returns>true if the value was set, false if otherwise</returns>
-    public Task<bool> Set<T>(string key, T data)
+    public Task<bool> Set<T>(string key, T data, TimeSpan? expiry = null)
     {
-        return Set(key, _json.Serialize(data).Convert());
+        return Set(key, _json.Serialize(data).Convert(), expiry);
     }
 
     /// <summary>
@@ -334,13 +340,14 @@ public class RedisService : IRedisService
     public async Task Subscribe(string channel, Action<RedisChannel, RedisValue> action)
     {
         var subscriber = await GetSubscriber();
-        await subscriber.SubscribeAsync(Prefix(channel, false), action);
+        var key = new RedisChannel(Prefix(channel, false), RedisChannel.PatternMode.Literal);
+        await subscriber.SubscribeAsync(key, action);
     }
 
     /// <summary>
     /// Subscribes to the given channel and executes the given action whenever it triggers
     /// </summary>
-    /// <typeparam name="T">The type of data the scubscription is dealing with</typeparam>
+    /// <typeparam name="T">The type of data the subscription is dealing with</typeparam>
     /// <param name="channel">The channel to subscribe to</param>
     /// <param name="action">The action to execute whenever a message is received</param>
     /// <returns>A task representing the completion of the subscription</returns>
@@ -369,7 +376,7 @@ public class RedisService : IRedisService
     public async Task<IObservable<RedisSub>> Subscribe(string channel)
     {
         var subject = new Subject<RedisSub>();
-        await Subscribe(channel, (chan, val) => subject.OnNext(new RedisSub(chan, val)));
+        await Subscribe(channel, (cha, val) => subject.OnNext(new RedisSub(cha, val)));
         return subject.AsObservable();
     }
 
@@ -382,7 +389,7 @@ public class RedisService : IRedisService
     public async Task<IObservable<RedisSub<T>>> Subscribe<T>(string channel)
     {
         var subject = new Subject<RedisSub<T>>();
-        await Subscribe<T>(channel, (chan, val) => subject.OnNext(new RedisSub<T>(chan, val)));
+        await Subscribe<T>(channel, (cha, val) => subject.OnNext(new RedisSub<T>(cha, val)));
         return subject.AsObservable();
     }
 
@@ -418,7 +425,8 @@ public class RedisService : IRedisService
     public async Task Publish(string channel, RedisValue value)
     {
         var subscriber = await GetSubscriber();
-        await subscriber.PublishAsync(Prefix(channel, false), value);
+        var key = new RedisChannel(Prefix(channel, false), RedisChannel.PatternMode.Literal);
+        await subscriber.PublishAsync(key, value);
     }
 
     /// <summary>
@@ -445,11 +453,12 @@ public class RedisService : IRedisService
     /// Unsubscribes from the given channel
     /// </summary>
     /// <param name="channel">The channel to unsubscribe from</param>
-    /// <returns>A task representing the completion of the unsubscription</returns>
+    /// <returns>A task representing the completion of the unsubscribe action</returns>
     public async Task Unsubscribe(string channel)
     {
         var subscriber = await GetSubscriber();
-        await subscriber.UnsubscribeAsync(Prefix(channel, false));
+        var key = new RedisChannel(Prefix(channel, false), RedisChannel.PatternMode.Literal);
+        await subscriber.UnsubscribeAsync(key);
     }
     #endregion
 }

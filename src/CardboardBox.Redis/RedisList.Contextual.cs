@@ -36,7 +36,7 @@ public interface IRedisList<T>
     /// <summary>
     /// Sets the element at the given position in the list
     /// </summary>
-    /// <param name="index">The postition of the element</param>
+    /// <param name="index">The position of the element</param>
     /// <param name="value">The value to set</param>
     /// <returns></returns>
     Task Set(long index, T value);
@@ -159,7 +159,7 @@ internal class RedisList<T> : IRedisList<T>
     /// <summary>
     /// Sets the element at the given position in the list
     /// </summary>
-    /// <param name="index">The postition of the element</param>
+    /// <param name="index">The position of the element</param>
     /// <param name="value">The value to set</param>
     /// <returns></returns>
     public Task Set(long index, T value) => _list.Set(index, _json.Serialize(value));
