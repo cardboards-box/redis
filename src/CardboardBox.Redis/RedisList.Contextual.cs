@@ -38,7 +38,6 @@ public interface IRedisList<T>
     /// </summary>
     /// <param name="index">The position of the element</param>
     /// <param name="value">The value to set</param>
-    /// <returns></returns>
     Task Set(long index, T value);
 
     /// <summary>
@@ -107,7 +106,6 @@ public interface IRedisList<T>
     /// </summary>
     /// <param name="start">The start index of the list to trim to.</param>
     /// <param name="stop">The end index of the list to trim to.</param>
-    /// <returns></returns>
     Task Trim(long start, long stop);
 }
 
@@ -116,21 +114,17 @@ public interface IRedisList<T>
 /// Note: This is a transient dummy object, and instances shouldn't be retained / persisted. Just create a new one.
 /// </summary>
 /// <typeparam name="T">The type of items in the list</typeparam>
-internal class RedisList<T> : IRedisList<T>
+internal class RedisList<T>(
+    IRedisService _redis, 
+    string prefix, 
+    IRedisJsonService _json) : IRedisList<T>
 {
-    private readonly IRedisJsonService _json;
-    private readonly IRedisList _list;
+    private readonly IRedisList _list = new RedisList(_redis, prefix);
 
     /// <summary>
     /// The key of the list in redis
     /// </summary>
     public string Key => _list.Key;
-
-    public RedisList(IRedisService redis, string prefix, IRedisJsonService json)
-    {
-        _json = json;
-        _list = new RedisList(redis, prefix);
-    }
 
     /// <summary>
     /// Adds the given elements to the start of the list

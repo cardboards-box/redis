@@ -7,19 +7,10 @@ namespace CardboardBox.Redis.TestCli;
 [Verb("redis-test")]
 public class TestVerbOptions { }
 
-public class TestVerb : IVerb<TestVerbOptions>
+public class TestVerb(
+    IRedisService _redis,
+    ILogger<TestVerb> _logger) : IVerb<TestVerbOptions>
 {
-    private readonly IRedisService _redis;
-    private readonly ILogger _logger;
-
-    public TestVerb(
-        IRedisService redis, 
-        ILogger<TestVerb> logger)
-    {
-        _redis = redis;
-        _logger = logger;
-    }
-
     /// <summary>
     /// Test pub/sub with raw strings
     /// </summary>
@@ -110,6 +101,38 @@ public class TestVerb : IVerb<TestVerbOptions>
     }
 
     /// <summary>
+    /// Test the hash-set functionality of redis
+    /// </summary>
+    /// <returns></returns>
+    public async Task TestHashSet()
+    {
+        const string KEY = "test-hash-set";
+        var hashSet = _redis.HashSet<int, SomeUser>(KEY);
+
+        _logger.LogInformation("Setting up some raw test data");
+        await hashSet.Set(1, new SomeUser(1, "User 1", 18));
+        await hashSet.Set(2, new SomeUser(2, "User 2", 21));
+        await hashSet.Set(3, new SomeUser(3, "User 3", 50));
+        _logger.LogInformation("Set Redis HashSet Key: {key} - Count: {count}", KEY, await hashSet.Count());
+
+        var user = await hashSet.Get(1);
+        _logger.LogInformation("Got Redis HashSet Key: {key} - User 1: {Id} - {Name} ({Age})", KEY, user?.Id, user?.Name, user?.Age);
+        user = await hashSet.Get(2);
+        _logger.LogInformation("Got Redis HashSet Key: {key} - User 2: {Id} - {Name} ({Age})", KEY, user?.Id, user?.Name, user?.Age);
+        user = await hashSet.Get(3);
+        _logger.LogInformation("Got Redis HashSet Key: {key} - User 3: {Id} - {Name} ({Age})", KEY, user?.Id, user?.Name, user?.Age);
+        await hashSet.Delete(2);
+        _logger.LogInformation("Deleted User 2 from Redis HashSet Key: {key} - Count: {count}", KEY, await hashSet.Count());
+
+        var all = await hashSet.All();
+        foreach (var kvp in all)
+            _logger.LogInformation("User: {Id} - {Name} ({Age})", kvp.Key, kvp.Value?.Name, kvp.Value?.Age);
+
+        await hashSet.Clear();
+        _logger.LogInformation("Cleared Redis HashSet Key: {key} - Count: {count}", KEY, await hashSet.Count());
+    }
+
+    /// <summary>
     /// Run all of the tests
     /// </summary>
     /// <returns></returns>
@@ -119,6 +142,7 @@ public class TestVerb : IVerb<TestVerbOptions>
         await TestJsonStore();
         await TestRawPubSub();
         await TestJsonPubSub();
+        await TestHashSet();
         return true;
     }
 

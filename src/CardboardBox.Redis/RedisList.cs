@@ -49,7 +49,7 @@ public interface IRedisList
     /// <summary>
     /// Sets the element at the given position in the list
     /// </summary>
-    /// <param name="index">The postition of the element</param>
+    /// <param name="index">The position of the element</param>
     /// <param name="value">The value to set</param>
     /// <returns></returns>
     Task Set(long index, RedisValue value);
@@ -57,7 +57,7 @@ public interface IRedisList
     /// <summary>
     /// Sets the element at the given position in the list
     /// </summary>
-    /// <param name="index">The postition of the element</param>
+    /// <param name="index">The position of the element</param>
     /// <param name="value">The value to set</param>
     /// <returns></returns>
     Task Set(long index, string value);
@@ -136,21 +136,14 @@ public interface IRedisList
 /// Provides access to redis list operations. 
 /// Note: This is a transient dummy object, and instances shouldn't be retained / persisted. Just create a new one.
 /// </summary>
-internal class RedisList : IRedisList
+internal class RedisList(
+    IRedisService _redis, 
+    string _key) : IRedisList
 {
-    public readonly IRedisService _redis;
-    private readonly string _key;
-
     /// <summary>
     /// The key of the list in redis
     /// </summary>
     public string Key => _redis.Prefix(_key);
-
-    public RedisList(IRedisService redis, string key)
-    {
-        _redis = redis;
-        _key = key;
-    }
 
     /// <summary>
     /// Adds the given elements to the start of the list

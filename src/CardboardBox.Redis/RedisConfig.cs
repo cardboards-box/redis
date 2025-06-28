@@ -44,10 +44,8 @@ internal class StaticRedisConfig : IRedisConfig
     }
 }
 
-internal class DynamicRedisConfig : IRedisConfig
+internal class DynamicRedisConfig(IConfiguration _config) : IRedisConfig
 {
-    private readonly IConfiguration _config;
-
     public string ConnectionString => _config["Redis:Connection"] ?? throw new ArgumentNullException("Redis:Connection", "Redis connection string cannot be null");
 
     public string DataPrefix => _config["Redis:Prefix:Data"] ?? string.Empty;
@@ -55,9 +53,4 @@ internal class DynamicRedisConfig : IRedisConfig
     public string EventsPrefix => _config["Redis:Prefix:Events"] ?? string.Empty;
 
     public ConfigurationOptions Options => ConfigurationOptions.Parse(ConnectionString);
-
-    public DynamicRedisConfig(IConfiguration config)
-    {
-        _config = config;
-    }
 }

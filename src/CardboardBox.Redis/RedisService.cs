@@ -87,6 +87,23 @@ public interface IRedisService
     /// <param name="key">The key of the redis list</param>
     /// <returns>The redis list service</returns>
     IRedisList<T> List<T>(string key);
+
+    /// <summary>
+    /// Provides access to redis related hash set operations.
+    /// </summary>
+    /// <param name="key">The key of the redis hash set</param>
+    /// <returns>The redis hash set service</returns>
+    IRedisHashSet HashSet(string key);
+
+    /// <summary>
+    /// Provides access to redis related hash set operations.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key of the hash-set (should be string-convertible)</typeparam>
+    /// <typeparam name="TValue">The type of values in the hash-set</typeparam>
+    /// <param name="key">The key of the redis hash set</param>
+    /// <returns>The redis hash set service</returns>
+    IRedisHashSet<TKey, TValue> HashSet<TKey, TValue>(string key)
+        where TKey : notnull, IConvertible, IFormattable, IComparable<TKey>, IEquatable<TKey>;
     #endregion
 
     #region Redis Pub/Sub
@@ -182,30 +199,13 @@ public interface IRedisService
 /// <summary>
 /// The concrete implementation of the <see cref="IRedisService"/>
 /// </summary>
-public class RedisService : IRedisService
+public class RedisService(
+    IRedisConnection _connection,
+    IRedisJsonService _json,
+    IRedisConfig _config) : IRedisService
 {
-    private readonly IRedisConnection _connection;
-    private readonly IRedisJsonService _json;
-    private readonly IRedisConfig _config;
-
     private IDatabase? _database;
     private ISubscriber? _subscriber;
-
-    /// <summary>
-    /// The dependency injection constructor
-    /// </summary>
-    /// <param name="connection">The connection to the redis instance(s)</param>
-    /// <param name="json">The JSON handler</param>
-    /// <param name="config">The redis connection configuration</param>
-    public RedisService(
-        IRedisConnection connection,
-        IRedisJsonService json,
-        IRedisConfig config)
-    {
-        _connection = connection;
-        _json = json;
-        _config = config;
-    }
 
     /// <summary>
     /// Prefixes the given key with the appropriate prefix
@@ -319,6 +319,26 @@ public class RedisService : IRedisService
     /// <param name="key">The key of the redis list</param>
     /// <returns>The redis list service</returns>
     public IRedisList<T> List<T>(string key) => new RedisList<T>(this, Prefix(key), _json);
+
+    /// <summary>
+    /// Provides access to redis related hash set operations.
+    /// </summary>
+    /// <param name="key">The key of the redis hash set</param>
+    /// <returns>The redis hash set service</returns>
+    public IRedisHashSet HashSet(string key) => new RedisHashSet(this, Prefix(key));
+
+    /// <summary>
+    /// Provides access to redis related hash set operations.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key of the hash-set (should be string-convertible)</typeparam>
+    /// <typeparam name="TValue">The type of values in the hash-set</typeparam>
+    /// <param name="key">The key of the redis hash set</param>
+    /// <returns>The redis hash set service</returns>
+    public IRedisHashSet<TKey, TValue> HashSet<TKey, TValue>(string key)
+        where TKey : notnull, IConvertible, IFormattable, IComparable<TKey>, IEquatable<TKey>
+    {
+        return new RedisHashSet<TKey, TValue>(this, Prefix(key), _json);
+    }
     #endregion
 
     #region Redis Pub/Sub

@@ -15,19 +15,10 @@ public interface IRedisConnection
 /// <summary>
 /// The concrete implementation of <see cref="IRedisConnection"/>
 /// </summary>
-public class RedisConnection : IRedisConnection
+public class RedisConnection(
+    IRedisConfig _config) : IRedisConnection
 {
-    private readonly IRedisConfig _config;
     private ConnectionMultiplexer? _connection;
-
-    /// <summary>
-    /// The Dependency Injection constructor
-    /// </summary>
-    /// <param name="config">The configuration options for the redis connection</param>
-    public RedisConnection(IRedisConfig config)
-    {
-        _config = config;
-    }
 
     /// <summary>
     /// Creates the connection to redis using the configuration options from <see cref="IRedisConfig"/>

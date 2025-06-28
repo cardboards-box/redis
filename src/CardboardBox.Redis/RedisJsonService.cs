@@ -9,7 +9,6 @@ using Json;
 /// </summary>
 public interface IRedisJsonService : IJsonService { }
 
-internal class RedisJsonService : SystemTextJsonService, IRedisJsonService
-{
-    public RedisJsonService(JsonSerializerOptions settings) : base(settings) { }
-}
+internal class RedisJsonService(
+    JsonSerializerOptions settings) : SystemTextJsonService(settings), IRedisJsonService
+{ }
